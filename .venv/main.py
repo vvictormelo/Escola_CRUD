@@ -167,12 +167,12 @@ def program():
     print("\033[1;36m\nSEJA BEM VINDO...\033[m")
 
     acao = 0
-    try:
-        while acao != 3:
 
+    while acao != 3:
+
+        try:
             menu()
             acao = float(input("\nInsira a ação desejada: "))
-
             match acao:
                 case 1:
                     create_tables()
@@ -187,12 +187,12 @@ def program():
                 case 3:
                     acao = 3
                     print("Saindo... Até logo!")
-            if (acao > 4.0) or (acao < 1.0):
+            if (acao > 4.0) or (acao < 1.0) or (acao == 2):
                 print(
                     "\033[1;31m\nOops...Ação inválida. Tente novamente!\n\033[m")
 
-    except ValueError:
-        print("\033[1;31m\nOops...Ação inválida. Tente novamente!\n\033[m")
+        except ValueError:
+            print("\033[1;31m\nOops...Ação inválida. Tente novamente!\n\033[m")
 
 
 if __name__ == "__main__":
