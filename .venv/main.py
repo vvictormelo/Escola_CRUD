@@ -43,18 +43,21 @@ def create_tables():
 
 def insert_tipo_curso():
 
-    descricao_tipo_curso = input("Digite a descrição do curso: ")
+    print("\n-=-=-=-=-=-=Cadastro de Tipo de curso-=-=-=-=-=-=")
+
+    descricao_tipo_curso = input("\nDigite a descrição do tipo de curso: ")
 
     curso = TipoCurso(descricao_tipo_curso)
 
     try:
         conexao = conector.connect('escola.db')
-        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
             "INSERT INTO tipo_curso (descricao) VALUES (?)", (curso.descricao,))
         conexao.commit()
+
+        print("\033[1;36m\nTipo de curso cadastrado com êxito.\033[m")
     except ConnectionError as e:
         print("Erro no banco", e)
 
@@ -65,13 +68,14 @@ def insert_tipo_curso():
 
 def insert_titulo():
 
-    descricao_titulo = input("Digite a descrição do titulo do professor: ")
+    print("\n-=-=-=-=-=-=Cadastro de Título-=-=-=-=-=-=")
+
+    descricao_titulo = input("\nDigite a descrição do titulo do professor: ")
 
     titulo = Titulo(descricao_titulo)
 
     try:
         conexao = conector.connect('escola.db')
-        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -79,6 +83,7 @@ def insert_titulo():
 
         conexao.commit()
 
+        print("\033[1;36m\nTítulo cadastrado com êxito.\033[m")
     except ConnectionError as e:
         print("Erro no banco", e)
 
@@ -89,14 +94,15 @@ def insert_titulo():
 
 def insert_instituicao():
 
-    sigla_instituicao = input("Digite a sigla da instituição: ")
-    descricao_instituicao = input("Digite a descrição da instituicao: ")
+    print("\n-=-=-=-=-=-=Cadastro de Instituição-=-=-=-=-=-=")
+
+    sigla_instituicao = input("\nDigite a sigla da instituição: ")
+    descricao_instituicao = input("\nDigite a descrição da instituicao: ")
 
     instituicao = Instituicao(sigla_instituicao, descricao_instituicao)
 
     try:
         conexao = conector.connect('escola.db')
-        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -104,6 +110,7 @@ def insert_instituicao():
 
         conexao.commit()
 
+        print("\033[1;36m\ninstituição cadastrada com êxito.\033[m")
     except ConnectionError as e:
         print("Erro no banco", e)
 
@@ -114,13 +121,14 @@ def insert_instituicao():
 
 def insert_tipo_disciplina():
 
-    descricao_tipo_disciplina = input("Digite o tipo de disciplina: ")
+    print("\n-=-=-=-=-=-=Cadastro de Disciplina-=-=-=-=-=-=")
+
+    descricao_tipo_disciplina = input("\nDigite o tipo de disciplina: ")
 
     tipo_disciplina = TipoDisciplina(descricao_tipo_disciplina)
 
     try:
         conexao = conector.connect('escola.db')
-        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -128,6 +136,7 @@ def insert_tipo_disciplina():
 
         conexao.commit()
 
+        print("\033[1;36m\nDisciplina cadastrada com êxito.\033[m")
     except ConnectionError as e:
         print("Erro no banco", e)
 
@@ -155,12 +164,10 @@ def menu():
 
 def program():
 
-    print("\033[1;36m\nSEJA BEM VINDO...\n\033[m")
+    print("\033[1;36m\nSEJA BEM VINDO...\033[m")
 
     acao = 0
-
     try:
-
         while acao != 3:
 
             menu()
@@ -179,8 +186,8 @@ def program():
                     insert_tipo_disciplina()
                 case 3:
                     acao = 3
-                    print("Até logo! Saindo..")
-            if (acao > 4) or (acao < 1):
+                    print("Saindo... Até logo!")
+            if (acao > 4.0) or (acao < 1.0):
                 print(
                     "\033[1;31m\nOops...Ação inválida. Tente novamente!\n\033[m")
 
