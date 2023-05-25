@@ -1,5 +1,5 @@
 import sqlite3 as conector
-from entities import TipoCurso, Titulo, Instituicao, TipoDisciplina
+from entities import TipoCurso, Titulo, Instituicao, TipoDisciplina, Professor
 
 
 def create_tables():
@@ -30,6 +30,16 @@ def create_tables():
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         descricao TEXT)''')
 
+        # crição da tabela professor
+        cursor.execute('''CREATE TABLE IF NOT EXISTS professor(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT,
+                        sexo TEXT,
+                        estado_civil TEXT,
+                        nascimento TEXT,
+                        telefone INTEGER,
+                        id_titulo REFERENCES titulo(id)) ''')
+
         conexao.commit()
 
         print("\033[1;36m\nTabelas criadas com êxito.\033[m")
@@ -51,6 +61,7 @@ def insert_tipo_curso():
 
     try:
         conexao = conector.connect('escola.db')
+        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -76,6 +87,7 @@ def insert_titulo():
 
     try:
         conexao = conector.connect('escola.db')
+        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -103,6 +115,7 @@ def insert_instituicao():
 
     try:
         conexao = conector.connect('escola.db')
+        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -129,6 +142,7 @@ def insert_tipo_disciplina():
 
     try:
         conexao = conector.connect('escola.db')
+        conexao.execute("PRAGMA foreign_keys = on")
         cursor = conexao.cursor()
 
         cursor.execute(
@@ -145,6 +159,80 @@ def insert_tipo_disciplina():
         conexao.close
 
 
+def insert_professor():
+
+    print("\n-=-=-=-=-=-=Cadastro de Professor-=-=-=-=-=-=")
+
+    nome_professor = input("\nDigite o nome: ")
+    sexo_professor = input("\nDigite o sexo (M/F): ")
+    estado_civil_professor = input("\nDigite o estado civil: ")
+    nascimento_professor = input("\nDigite a data de nascimento (DDMMMAAAA): ")
+    telefone_professor = input("\nDigite o telefone (XXXXXXXXXXX): ")
+
+    decisao_titulo = input(
+        "\nDeseja inserir agora o título do professor (S/N):")
+
+    if (decisao_titulo in 'Ss'):
+
+        select_titulo()
+
+        id_titulo_professor = int(
+            input("\nDigite o código título do professor: "))
+
+    professor = Professor(id, nome_professor, sexo_professor,
+                          estado_civil_professor, nascimento_professor, telefone_professor)
+
+    try:
+        conexao = conector.connect('escola.db')
+        cursor = conexao.cursor()
+
+        comando1 = (
+            "INSERT INTO professor (nome, sexo, estado_civil, nascimento, telefone, id_titulo) VALUES (?, ?, ?, ?, ?, ?)")
+
+        comando2 = (
+            "INSERT INTO professor (nome, sexo, estado_civil, nascimento, telefone) VALUES (?, ?, ?, ?, ?)")
+
+        if decisao_titulo in 'Ss':
+            conexao.execute(comando1, [professor.nome, professor.sexo,
+                            professor.estado_civil, professor.nascimento, professor.telefone, id_titulo_professor])
+        else:
+            conexao.execute(comando2, [professor.nome, professor.sexo, professor.estado_civil,
+                            professor.nascimento, professor.telefone])
+
+        conexao.commit()
+
+        print("\033[1;36m\nDisciplina cadastrada com êxito.\033[m")
+
+    except ConnectionError as e:
+
+        print("Erro no banco", e)
+
+    finally:
+        cursor.close()
+        conexao.close
+
+
+def select_titulo():
+
+    try:
+        conexao = conector.connect('escola.db')
+        cursor = conexao.cursor()
+
+        cursor.execute('''SELECT * FROM titulo''')
+
+        registros = cursor.fetchall()
+        print("\nTITULOS CADASTRADOS")
+        for i in registros:
+            print(f"\n{i}")
+
+    except ConnectionError as e:
+        print("Erro no banco", e)
+
+    finally:
+        cursor.close()
+        conexao.close
+
+
 def menu():
 
     print("\n")
@@ -153,13 +241,15 @@ def menu():
     print("-=" * 15)
     print("\n1 - Criar tabelas")
     print(
-        """2 - Crud entidades: 
+        """2 - Crud entidades:
     2.1 - Criar Tipo de curso
-    2.2 - Criar Titulo 
+    2.2 - Criar Titulo
     2.3 - Criar Instituição
-    2.4 - Criar Tipo de Disciplina"""
+    2.4 - Criar Tipo de Disciplina
+    2.5 - Criar Professor"""
     )
-    print("3 - Sair")
+    print("3 - Select All")
+    print("4 - Sair")
 
 
 def program():
@@ -168,7 +258,7 @@ def program():
 
     acao = 0
 
-    while acao != 3:
+    while acao != 4:
 
         try:
             menu()
@@ -184,10 +274,14 @@ def program():
                     insert_instituicao()
                 case 2.4:
                     insert_tipo_disciplina()
+                case 2.5:
+                    insert_professor()
                 case 3:
-                    acao = 3
-                    print("Saindo... Até logo!")
-            if (acao > 4.0) or (acao < 1.0) or (acao == 2):
+                    select_titulo()
+                case 4:
+                    acao = 4
+                    print("\nSaindo... Até logo!")
+            if (acao > 5) or (acao < 1) or (acao == 2):
                 print(
                     "\033[1;31m\nOops...Ação inválida. Tente novamente!\n\033[m")
 
