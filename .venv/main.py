@@ -1,5 +1,5 @@
 import sqlite3 as conector
-from entities import TipoCurso, Titulo, Instituicao, TipoDisciplina, Professor
+from entities import TipoCurso, Titulo, Instituicao, TipoDisciplina, Professor, Disciplina, Curso
 
 
 def create_tables():
@@ -39,6 +39,28 @@ def create_tables():
                         nascimento TEXT,
                         telefone INTEGER,
                         id_titulo REFERENCES titulo(id)) ''')
+
+        # criação da tabela de disciplina
+        cursor.execute('''CREATE TABLE IF NOT EXISTS disciplina(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        sigla TEXT,
+                        descricao TEXT,
+                        periodo INTEGER,
+                        creditos INTEGER,
+                        carga_horaria INTEGER,
+                        id_tipo_disciplina REFERENCES tipo_disciplina (id),
+                        id_curso REFERENCES curso(id))''')
+
+        # criação da tabela curso
+        cursor.execute('''CREATE TABLE IF NOT EXISTS curso(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        descricao TEXT,
+                        id_instituicao REFERENCES instituicao (id))''')
+
+        # cricação da tabela professor por disciplina
+        cursor.execute('''CREATE TABLE IF NOT EXISTS professor_por_disciplina(
+                        id_professor REFERENCES professor(id),
+                        id_disciplina REFERENCES disciplina(id))''')
 
         conexao.commit()
 
@@ -169,6 +191,9 @@ def insert_professor():
     nascimento_professor = input("\nDigite a data de nascimento (DDMMMAAAA): ")
     telefone_professor = input("\nDigite o telefone (XXXXXXXXXXX): ")
 
+    professor = Professor(id, nome_professor, sexo_professor,
+                          estado_civil_professor, nascimento_professor, telefone_professor)
+
     decisao_titulo = input(
         "\nDeseja inserir agora o título do professor (S/N):")
 
@@ -178,38 +203,50 @@ def insert_professor():
 
         id_titulo_professor = int(
             input("\nDigite o código título do professor: "))
+        try:
 
-    professor = Professor(id, nome_professor, sexo_professor,
-                          estado_civil_professor, nascimento_professor, telefone_professor)
+            conexao = conector.connect('escola.db')
+            cursor = conexao.cursor()
 
-    try:
-        conexao = conector.connect('escola.db')
-        cursor = conexao.cursor()
+            comando1 = (
+                "INSERT INTO professor (nome, sexo, estado_civil, nascimento, telefone, id_titulo) VALUES (?, ?, ?, ?, ?, ?)")
 
-        comando1 = (
-            "INSERT INTO professor (nome, sexo, estado_civil, nascimento, telefone, id_titulo) VALUES (?, ?, ?, ?, ?, ?)")
-
-        comando2 = (
-            "INSERT INTO professor (nome, sexo, estado_civil, nascimento, telefone) VALUES (?, ?, ?, ?, ?)")
-
-        if decisao_titulo in 'Ss':
             conexao.execute(comando1, [professor.nome, professor.sexo,
                             professor.estado_civil, professor.nascimento, professor.telefone, id_titulo_professor])
-        else:
+
+            conexao.commit()
+
+            print("\033[1;36m\nDisciplina cadastrada com êxito.\033[m")
+
+        except ConnectionError as e:
+
+            print("Erro no banco", e)
+
+        finally:
+            cursor.close()
+            conexao.close
+    else:
+        try:
+            conexao = conector.connect('escola.db')
+            cursor = conexao.cursor()
+
+            comando2 = (
+                "INSERT INTO professor (nome, sexo, estado_civil, nascimento, telefone) VALUES (?, ?, ?, ?, ?)")
+
             conexao.execute(comando2, [professor.nome, professor.sexo, professor.estado_civil,
                             professor.nascimento, professor.telefone])
 
-        conexao.commit()
+            conexao.commit()
 
-        print("\033[1;36m\nDisciplina cadastrada com êxito.\033[m")
+            print("\033[1;36m\nDisciplina cadastrada com êxito.\033[m")
 
-    except ConnectionError as e:
+        except ConnectionError as e:
 
-        print("Erro no banco", e)
+            print("Erro no banco", e)
 
-    finally:
-        cursor.close()
-        conexao.close
+        finally:
+            cursor.close()
+            conexao.close
 
 
 def select_titulo():

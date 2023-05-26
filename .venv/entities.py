@@ -31,3 +31,19 @@ class Professor:
         self.estado_civil = estado_civil
         self.nascimento = nascimento
         self.telefone = telefone
+
+
+class Disciplina:
+    def __init__(self, id, sigla, descricao, periodo, creditos, carga_horaria):
+        self.id = id
+        self.sigla = sigla
+        self.descricao = descricao
+        self.periodo = periodo
+        self.creditos = creditos
+        self.carga_horaria = carga_horaria
+
+
+class Curso:
+    def __init__(self, id, descricao):
+        self.id = id
+        self.descricao = descricao
