@@ -55,7 +55,8 @@ def create_tables():
         cursor.execute('''CREATE TABLE IF NOT EXISTS curso(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         descricao TEXT,
-                        id_instituicao REFERENCES instituicao (id))''')
+                        id_instituicao REFERENCES instituicao (id),
+                        id_tipo_curso REFERENCES tipo_curso(id))''')
 
         # cricação da tabela professor por disciplina
         cursor.execute('''CREATE TABLE IF NOT EXISTS professor_por_disciplina(
